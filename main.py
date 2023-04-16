@@ -7,6 +7,9 @@ from fastapi.responses import PlainTextResponse, Response
 from playwright.sync_api import sync_playwright
 
 from config import settings
+from server import launch_context
+
+ACCESS_TOKEN = None
 
 
 class EndpointFilter(logging.Filter):
@@ -38,30 +41,51 @@ async def exception_handler(request: Request, exc: Exception):
 
 
 def _reverse_proxy(request: Request):
+    global ACCESS_TOKEN
     with sync_playwright() as p:
-        browser = p.chromium.connect_over_cdp(
-            settings.browser_server,
-            timeout=settings.timeout
-        )
-        context = browser.contexts[0]
-        api_request_context = context.request
-        target_url = "https://chat.openai.com/backend-api" + request.url.path
-        if request.url.query:
-            target_url += "?" + request.url.query
-        api_response = api_request_context.fetch(
-            target_url, method=request.method, data=request.body()
-        )
-        return Response(
-            headers=api_response.headers,
-            content=api_response.body,
-            status_code=api_response.status,
-        )
+        if settings.enable_browser_server:
+            browser = p.chromium.connect_over_cdp(
+                settings.browser_server,
+                timeout=settings.timeout
+            )
+            context = browser.contexts[0]
+            page = context.pages[0]
+        else:
+            context = launch_context(p)
+            page = context.pages[0]
+        #     page.goto(settings.base_url)
+        #     page.wait_for_timeout(5000)
+        #     checkbox = page.locator('//input[@type="checkbox"]')
+        #     if checkbox.count():
+        #         checkbox.click()
+
+        # if not ACCESS_TOKEN:
+        #     page.goto(settings.base_url)
+        #     with page.expect_response("https://chat.openai.com/api/auth/session") as session:
+        #         ACCESS_TOKEN = session.value.json()["accessToken"]
+        # result = page.evaluate(
+        #     f'fetch("https://chat.openai.com{request.url.path}",'
+        #     '{"headers": {"accept": "*/*", '
+        #     f'"authorization": "Bearer {ACCESS_TOKEN}", '
+        #     '"content-type": "application/json", }, '
+        #     '"referrer": "https://chat.openai.com/",'
+        #     '"referrerPolicy": "same-origin",'
+        #     '"body": null,'
+        #     '"method": "GET",'
+        #     '"mode": "cors",credentials": "include"})'
+        # )
+    result = page.evaluate(
+        'fetch("http://baidu.com").then(response => response.text())')
+
+    return result
 
 
 app.add_route(
-    "/api/{path:path}",
+    "/backend-api/{path:path}",
     _reverse_proxy,
     ["GET", "POST"]
+
+
 )
 
 if __name__ == "__main__":

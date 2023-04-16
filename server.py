@@ -9,10 +9,8 @@ from config import settings
 
 _logger = logging.getLogger(__name__)
 
-playwright = sync_playwright().start()
 
-
-def launch_persistent_context() -> "BrowserContext":
+def launch_persistent_context(playwright) -> "BrowserContext":
     return playwright.chromium.launch_persistent_context(
         base_url=settings.base_url,
         user_data_dir=settings.user_data_dir,
@@ -20,7 +18,7 @@ def launch_persistent_context() -> "BrowserContext":
         timeout=settings.timeout,
         args=[
             '--no-sandbox',
-            '--remote-debugging-port=9222',
+            '--remote-debugging-port=9999',
             '--disable-dev-shm-usage',
             '--disable-gpu',
             '--window-size=1920,1080',
@@ -30,22 +28,25 @@ def launch_persistent_context() -> "BrowserContext":
         ])
 
 
-def launch_context() -> "BrowserContext":
-    context = launch_persistent_context()
+def launch_context(playwright) -> "BrowserContext":
+    context = launch_persistent_context(playwright)
     context.set_default_navigation_timeout(settings.navigation_timeout)
     context.set_default_timeout(settings.timeout)
     return context
 
 
-context = launch_context()
-
-
 def heart_beat():
+    global playwright
     if not settings.heart_beat:
         return
     global context
     try:
-        context.new_page().close()
+        page = context.pages[0]
+        page.goto(settings.base_url)
+        page.wait_for_timeout(50000)
+        checkbox = page.locator('//input[@type="checkbox"]')
+        if checkbox.count():
+            checkbox.click()
     except Exception as e:
         _logger.exception(e)
         try:
@@ -53,11 +54,13 @@ def heart_beat():
         except Exception as e:
             _logger.exception(e)
         _logger.info("Relaunching context")
-        context = launch_context()
+        context = launch_context(playwright)
 
 
-schedule.every(10).seconds.do(heart_beat)
-
-while True:
-    schedule.run_pending()
-    time.sleep(1)
+if __name__ == "__main__":
+    playwright = sync_playwright().start()
+    context = launch_context(playwright)
+    schedule.every(settings.heart_beat).seconds.do(heart_beat)
+    while True:
+        schedule.run_pending()
+        time.sleep(1)
