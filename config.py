@@ -11,6 +11,7 @@ logging.basicConfig(
 class Settings(BaseSettings):
     base_url: str = "https://chat.openai.com/"
     user_data_dir: str = "tmp/.playwright"
+    browser_server: str = "http://localhost:9222"
     headless: bool = True
     heart_beat: bool = True
     timeout: int = 10000

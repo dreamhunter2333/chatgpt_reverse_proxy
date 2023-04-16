@@ -37,8 +37,7 @@ async def exception_handler(request: Request, exc: Exception):
     )
 
 
-@app.route('/api/<path:path>')
-def proxy(request: Request):
+def _reverse_proxy(request: Request):
     with sync_playwright() as p:
         browser = p.chromium.connect_over_cdp(
             settings.browser_server,
@@ -58,6 +57,12 @@ def proxy(request: Request):
             status_code=api_response.status,
         )
 
+
+app.add_route(
+    "/api/{path:path}",
+    _reverse_proxy,
+    ["GET", "POST"]
+)
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
