@@ -4,10 +4,9 @@ import uvicorn
 from fastapi import FastAPI, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import PlainTextResponse, Response
-from playwright.sync_api import sync_playwright
+from playwright.async_api import async_playwright
 
 from config import settings
-from server import launch_context
 
 ACCESS_TOKEN = None
 
@@ -40,44 +39,52 @@ async def exception_handler(request: Request, exc: Exception):
     )
 
 
-def _reverse_proxy(request: Request):
+async def _reverse_proxy(request: Request):
     global ACCESS_TOKEN
-    with sync_playwright() as p:
-        if settings.enable_browser_server:
-            browser = p.chromium.connect_over_cdp(
-                settings.browser_server,
-                timeout=settings.timeout
-            )
-            context = browser.contexts[0]
-            page = context.pages[0]
-        else:
-            context = launch_context(p)
-            page = context.pages[0]
-        #     page.goto(settings.base_url)
-        #     page.wait_for_timeout(5000)
-        #     checkbox = page.locator('//input[@type="checkbox"]')
-        #     if checkbox.count():
-        #         checkbox.click()
+    async with async_playwright() as p:
+        browser = await p.chromium.connect_over_cdp(
+            settings.browser_server,
+            timeout=settings.timeout
+        )
+        context = browser.contexts[0]
+        page = context.pages[0]
 
-        # if not ACCESS_TOKEN:
-        #     page.goto(settings.base_url)
-        #     with page.expect_response("https://chat.openai.com/api/auth/session") as session:
-        #         ACCESS_TOKEN = session.value.json()["accessToken"]
-        # result = page.evaluate(
-        #     f'fetch("https://chat.openai.com{request.url.path}",'
-        #     '{"headers": {"accept": "*/*", '
-        #     f'"authorization": "Bearer {ACCESS_TOKEN}", '
-        #     '"content-type": "application/json", }, '
-        #     '"referrer": "https://chat.openai.com/",'
-        #     '"referrerPolicy": "same-origin",'
-        #     '"body": null,'
-        #     '"method": "GET",'
-        #     '"mode": "cors",credentials": "include"})'
-        # )
-    result = page.evaluate(
-        'fetch("http://baidu.com").then(response => response.text())')
-
-    return result
+        if not ACCESS_TOKEN:
+            await page.goto(settings.base_url)
+            async with page.expect_response("https://chat.openai.com/api/auth/session") as session:
+                value = await session.value
+                value_json = await value.json()
+                ACCESS_TOKEN = value_json["accessToken"]
+        print(request.method.upper())
+        result = await page.evaluate('''
+            async () => {
+                response = await fetch("https://chat.openai.com%s", {
+                    "headers": {
+                        "accept": "*/*",
+                        "authorization": "Bearer %s",
+                        "content-type": "application/json",
+                    },
+                    "referrer": "https://chat.openai.com/",
+                    "referrerPolicy": "same-origin",
+                    "body": null,
+                    "method": "%s",
+                    "mode": "cors",
+                    "credentials": "include"
+                });
+                return {
+                    status: response.status,
+                    statusText: response.statusText,
+                    headers: response.headers,
+                    content: await response.text()
+                }
+            }
+            ''' % (request.url.path, ACCESS_TOKEN, request.method.upper())
+        )
+        return Response(
+            content=result["content"],
+            status_code=result["status"],
+            headers=result["headers"],
+        )
 
 
 app.add_route(
