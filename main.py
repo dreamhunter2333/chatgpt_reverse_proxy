@@ -55,6 +55,14 @@ async def _reverse_proxy(request: Request):
                 value = await session.value
                 value_json = await value.json()
                 ACCESS_TOKEN = value_json["accessToken"]
+
+        body = await request.body()
+        body = (
+            "null"
+            if request.method.upper() == "GET"
+            else f"'{body.decode()}'"
+        )
+        print(body)
         result = await page.evaluate('''
             async () => {
                 response = await fetch("https://chat.openai.com%s", {
@@ -65,7 +73,7 @@ async def _reverse_proxy(request: Request):
                     },
                     "referrer": "https://chat.openai.com/",
                     "referrerPolicy": "same-origin",
-                    "body": null,
+                    "body": %s,
                     "method": "%s",
                     "mode": "cors",
                     "credentials": "include"
@@ -77,7 +85,7 @@ async def _reverse_proxy(request: Request):
                     content: await response.text()
                 }
             }
-            ''' % (request.url.path, ACCESS_TOKEN, request.method.upper())
+            ''' % (request.url.path, ACCESS_TOKEN, body, request.method.upper())
         )
         return Response(
             content=result["content"],

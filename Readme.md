@@ -10,9 +10,6 @@
 services:
   chatgpt_reverse_proxy:
     image: ghcr.io/dreamhunter2333/chatgpt_reverse_proxy:latest
-    build:
-      context: .
-      dockerfile: Dockerfile
     container_name: chatgpt_reverse_proxy
     restart: always
     ports:
