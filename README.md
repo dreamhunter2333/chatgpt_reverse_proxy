@@ -1,5 +1,7 @@
 # Chatgpt reverse proxy based on Browser
 
+![overview](overview.png)
+
 ## Features TODO
 
 - [x] support proxy
@@ -12,7 +14,7 @@
 - openai account
 - VM has 2gb memory(this container need about 500M)
 
-## RUN docker
+## RUN in docker
 
 open localhost:7900, your can forward port 7900 to local by ssh, and login to `https://chat.openai.com/`
 
@@ -68,7 +70,7 @@ services:
       # - proxy=http://127.0.0.1:7890
 ```
 
-## RUN local
+## RUN locally
 
 ```bash
 python3 -m venv ./venv
@@ -77,3 +79,9 @@ python3 -m venv ./venv
 ./venv/bin/python server.py
 ./venv/bin/python main.py
 ```
+
+## reference
+
+- [moeakwak/chatgpt-web-share](https://github.com/moeakwak/chatgpt-web-share/wiki/%E4%B8%AD%E6%96%87%E6%8C%87%E5%8D%97)
+- [SeleniumHQ/docker-selenium](https://github.com/SeleniumHQ/docker-selenium)
+- [microsoft/playwright-python](https://github.com/microsoft/playwright-python)
