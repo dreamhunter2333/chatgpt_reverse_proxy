@@ -10,7 +10,8 @@
 
 ## Features and TODO
 
-- [x] support all backen-api
+- [x] support all `backen-api`
+- [x] support auto get `ACCESS_TOKEN`
 - [x] support proxy
 - [x] base on browser
 - [ ] vnc password
