@@ -13,6 +13,7 @@
 - [x] support proxy
 - [x] base on browser
 - [ ] vnc password
+- [ ] Auto Click cloudflare checkbox
 
 ## Overview
 
