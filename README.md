@@ -1,17 +1,33 @@
 # Chatgpt reverse proxy based on Browser
 
-**TODO**
+## TODO
 
 - [ ] vnc password
 
 ## RUN docker
 
+## requirements
+
+- network access to openai
+- openai account
+- VM has 2gb memory(this container need about 500M)
+
 open localhost:7900, your can forward port 7900 to local by ssh, and login to `https://chat.openai.com/`
 
-UI use [chatgpt-web-share](https://github.com/moeakwak/chatgpt-web-share/wiki/%E4%B8%AD%E6%96%87%E6%8C%87%E5%8D%97)
 
 ```bash
 ssh -L 7900:localhost:7900  azure_vm
+```
+
+UI use [chatgpt-web-share](https://github.com/moeakwak/chatgpt-web-share/wiki/%E4%B8%AD%E6%96%87%E6%8C%87%E5%8D%97)
+
+change `config.yaml`
+
+```yaml
+# from
+chatgpt_base_url: http://127.0.0.1:6060/api/
+# to
+chatgpt_base_url: http:// chatgpt-reverse-proxy:8000/backen-api/
 ```
 
 ```yaml
