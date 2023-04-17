@@ -17,6 +17,7 @@ class Settings(BaseSettings):
     heart_beat: int = 3600
     timeout: int = 10000
     navigation_timeout: int = 10000
+    checkbox_timeout: int = 50000
 
     class Config:
         env_file = ".env"

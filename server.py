@@ -42,12 +42,19 @@ def heart_beat():
         return
     global context
     try:
+        _logger.info(f"server heart_beat: {settings.heart_beat}")
         page = context.pages[0]
         page.goto(settings.base_url)
-        page.wait_for_timeout(50000)
-        checkbox = page.locator('//input[@type="checkbox"]')
-        if checkbox.count():
-            checkbox.click()
+        try:
+            checkbox = page.locator(
+                '//input[@type="checkbox"]'
+            ).wait_for(
+                timeout=settings.checkbox_timeout
+            )
+            if checkbox.count():
+                checkbox.click()
+        except Exception:
+            pass
     except Exception as e:
         _logger.exception(e)
         try:
