@@ -59,7 +59,7 @@ async def _reverse_proxy(request: Request):
         body = await request.body()
         body = (
             "null"
-            if request.method.upper() == "GET"
+            if request.method.upper() in ("GET", "DELETE")
             else f"'{body.decode()}'"
         )
         print(body)
@@ -97,9 +97,7 @@ async def _reverse_proxy(request: Request):
 app.add_route(
     "/backend-api/{path:path}",
     _reverse_proxy,
-    ["GET", "POST"]
-
-
+    ["GET", "POST", "DELETE", "PUT"]
 )
 
 if __name__ == "__main__":
