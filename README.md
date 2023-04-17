@@ -28,7 +28,7 @@
 
 - network access to openai
 - openai account
-- VM has 2gb memory(this container need about 500M)
+- 500M Memory, you can enable swap on you server
 
 ## RUN in docker
 
