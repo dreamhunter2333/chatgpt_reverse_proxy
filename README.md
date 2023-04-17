@@ -1,12 +1,22 @@
 # Chatgpt reverse proxy based on Browser
 
-![overview](overview.png)
+- [Chatgpt reverse proxy based on Browser](#chatgpt-reverse-proxy-based-on-browser)
+  - [Features and TODO](#features-and-todo)
+  - [Overview](#overview)
+  - [requirements](#requirements)
+  - [RUN in docker](#run-in-docker)
+  - [RUN locally](#run-locally)
+  - [reference](#reference)
 
-## Features TODO
+## Features and TODO
 
 - [x] support proxy
 - [x] base on browser
 - [ ] vnc password
+
+## Overview
+
+![overview](overview.png)
 
 ## requirements
 
