@@ -55,7 +55,6 @@ async def _reverse_proxy(request: Request):
                 value = await session.value
                 value_json = await value.json()
                 ACCESS_TOKEN = value_json["accessToken"]
-        print(request.method.upper())
         result = await page.evaluate('''
             async () => {
                 response = await fetch("https://chat.openai.com%s", {
