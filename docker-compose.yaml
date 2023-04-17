@@ -11,3 +11,6 @@ services:
       - "7900:7900"
     volumes:
       - ./tmp:/app/tmp
+    environment:
+      - VNC_NO_PASSWORD=1
+      - user_data_dir=/app/tmp
