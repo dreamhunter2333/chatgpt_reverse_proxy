@@ -28,6 +28,8 @@
 
 open `localhost:7900`, your can forward port 7900 to local by ssh, and login to `https://chat.openai.com/`, if you get 403 when run sometimes. please `localhost:7900` and check again.
 
+**Make sure the first tab of the browser is `https://chat.openai.com/`**
+
 ```bash
 ssh -L 7900:localhost:7900  azure_vm
 ```
