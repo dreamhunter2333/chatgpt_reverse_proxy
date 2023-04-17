@@ -1,10 +1,10 @@
 # Chatgpt reverse proxy based on Browser
 
-## TODO
+## Features TODO
 
+- [x] support proxy
+- [x] base on browser
 - [ ] vnc password
-
-## RUN docker
 
 ## requirements
 
@@ -12,8 +12,9 @@
 - openai account
 - VM has 2gb memory(this container need about 500M)
 
-open localhost:7900, your can forward port 7900 to local by ssh, and login to `https://chat.openai.com/`
+## RUN docker
 
+open localhost:7900, your can forward port 7900 to local by ssh, and login to `https://chat.openai.com/`
 
 ```bash
 ssh -L 7900:localhost:7900  azure_vm
@@ -64,8 +65,8 @@ services:
       - user_data_dir=/app/tmp
       - timeout=100000
       - navigation_timeout=100000
+      # - proxy=http://127.0.0.1:7890
 ```
-
 
 ## RUN local
 
