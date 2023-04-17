@@ -2,7 +2,7 @@ import time
 import logging
 import schedule
 
-from playwright.sync_api import sync_playwright, BrowserContext
+from playwright.sync_api import sync_playwright, BrowserContext, ProxySettings
 
 from config import settings
 
@@ -16,6 +16,7 @@ def launch_persistent_context(playwright) -> "BrowserContext":
         user_data_dir=settings.user_data_dir,
         headless=settings.headless,
         timeout=settings.timeout,
+        proxy=ProxySettings(server=settings.proxy) if settings.proxy else None,
         args=[
             '--no-sandbox',
             '--remote-debugging-port=9999',
