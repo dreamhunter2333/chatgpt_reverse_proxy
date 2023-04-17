@@ -97,7 +97,7 @@ async def _reverse_proxy(request: Request):
 app.add_route(
     "/backend-api/{path:path}",
     _reverse_proxy,
-    ["GET", "POST", "DELETE", "PUT"]
+    ["GET", "POST", "DELETE", "PUT", "PATCH"]
 )
 
 if __name__ == "__main__":
