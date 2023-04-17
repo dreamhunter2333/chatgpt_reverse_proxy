@@ -55,7 +55,6 @@ services:
       - 80:80
       - 8080:80
       # - 6060:6060
-    cpus: 0.2
     depends_on:
       - chatgpt-reverse-proxy
     volumes:
