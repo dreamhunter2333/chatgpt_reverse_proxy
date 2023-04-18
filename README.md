@@ -17,6 +17,7 @@
 - [x] base on browser
 - [x] Auto Click cloudflare checkbox
 - [ ] vnc password
+- [ ] auto refersh access_token when 403
 
 ## Overview
 
