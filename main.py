@@ -49,12 +49,28 @@ async def _reverse_proxy(request: Request):
         context = browser.contexts[0]
         page = context.pages[0]
 
-        if not ACCESS_TOKEN:
+        if settings.auto_refersh_access_token and not ACCESS_TOKEN:
             await page.goto(settings.base_url)
+            try:
+                checkbox = page.locator(
+                    '//input[@type="checkbox"]'
+                ).wait_for(
+                    timeout=settings.checkbox_timeout
+                )
+                if checkbox.count():
+                    checkbox.click()
+            except Exception:
+                pass
             async with page.expect_response("https://chat.openai.com/api/auth/session") as session:
                 value = await session.value
                 value_json = await value.json()
                 ACCESS_TOKEN = value_json["accessToken"]
+
+        access_token = (
+            f"Bearer {ACCESS_TOKEN}"
+            if ACCESS_TOKEN else
+            request.headers.get("Authorization")
+        )
 
         body = await request.body()
         body = (
@@ -62,13 +78,13 @@ async def _reverse_proxy(request: Request):
             if request.method.upper() in ("GET", "DELETE")
             else f"'{body.decode()}'"
         )
-        print(body)
+        target_path = f"{request.url.path}?{request.url.query}" if request.url.query else request.url.path
         result = await page.evaluate('''
             async () => {
                 response = await fetch("https://chat.openai.com%s", {
                     "headers": {
                         "accept": "*/*",
-                        "authorization": "Bearer %s",
+                        "authorization": "%s",
                         "content-type": "application/json",
                     },
                     "referrer": "https://chat.openai.com/",
@@ -85,7 +101,7 @@ async def _reverse_proxy(request: Request):
                     content: await response.text()
                 }
             }
-            ''' % (request.url.path, ACCESS_TOKEN, body, request.method.upper())
+            ''' % (target_path, access_token, body, request.method.upper())
         )
         return Response(
             content=result["content"],

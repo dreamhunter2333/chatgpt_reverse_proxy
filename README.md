@@ -11,11 +11,12 @@
 ## Features and TODO
 
 - [x] support all `backen-api`
-- [x] support auto get `ACCESS_TOKEN`
+- [x] support login and auto get `ACCESS_TOKEN`
+- [x] support use `ACCESS_TOKEN`
 - [x] support proxy
 - [x] base on browser
+- [x] Auto Click cloudflare checkbox
 - [ ] vnc password
-- [ ] Auto Click cloudflare checkbox
 
 ## Overview
 
@@ -29,9 +30,10 @@
 
 ## RUN in docker
 
-open `localhost:7900`, your can forward port 7900 to local by ssh, and login to `https://chat.openai.com/`, if you get 403 when run sometimes. please `localhost:7900` and check again.
+Options:
 
-**Make sure the first tab of the browser is `https://chat.openai.com/`**
+1. set `auto_refersh_access_token=True`. Open `localhost:7900`, your can forward port 7900 to local by ssh, and login to `https://chat.openai.com/`, if you get 403 when run sometimes. please `localhost:7900` and check again. **Make sure the first tab of the browser is `https://chat.openai.com/`**
+2. set `ACCESS_TOKEN` in your requset header's `Authorization`
 
 ```bash
 ssh -L 7900:localhost:7900  azure_vm
@@ -82,6 +84,7 @@ services:
       - timeout=100000
       - navigation_timeout=100000
       # - proxy=http://127.0.0.1:7890
+      # - auto_refersh_access_token=False
 ```
 
 ## RUN locally

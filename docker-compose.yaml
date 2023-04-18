@@ -14,3 +14,4 @@ services:
     environment:
       - VNC_NO_PASSWORD=1
       - user_data_dir=/app/tmp
+      - auto_refersh_access_token=False

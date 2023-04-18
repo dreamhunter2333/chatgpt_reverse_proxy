@@ -11,6 +11,7 @@ logging.basicConfig(
 class Settings(BaseSettings):
     base_url: str = "https://chat.openai.com"
     proxy: str = ""
+    auto_refersh_access_token: bool = False
     user_data_dir: str = "tmp/.playwright"
     browser_server: str = "http://localhost:9999"
     headless: bool = False

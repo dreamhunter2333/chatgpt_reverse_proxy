@@ -45,16 +45,17 @@ def heart_beat():
         _logger.info(f"server heart_beat: {settings.heart_beat}")
         page = context.pages[0]
         page.goto(settings.base_url)
-        try:
-            checkbox = page.locator(
-                '//input[@type="checkbox"]'
-            ).wait_for(
-                timeout=settings.checkbox_timeout
-            )
-            if checkbox.count():
-                checkbox.click()
-        except Exception:
-            pass
+        if settings.auto_refersh_access_token:
+            try:
+                checkbox = page.locator(
+                    '//input[@type="checkbox"]'
+                ).wait_for(
+                    timeout=settings.checkbox_timeout
+                )
+                if checkbox.count():
+                    checkbox.click()
+            except Exception:
+                pass
     except Exception as e:
         _logger.exception(e)
         try:
@@ -68,6 +69,7 @@ def heart_beat():
 if __name__ == "__main__":
     playwright = sync_playwright().start()
     context = launch_context(playwright)
+    heart_beat()
     schedule.every(settings.heart_beat).seconds.do(heart_beat)
     while True:
         schedule.run_pending()
