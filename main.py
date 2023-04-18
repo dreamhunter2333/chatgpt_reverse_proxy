@@ -4,7 +4,7 @@ import uvicorn
 from fastapi import FastAPI, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import PlainTextResponse, Response
-from playwright.async_api import async_playwright
+from playwright.async_api import async_playwright, Page
 
 from config import settings
 
@@ -39,6 +39,40 @@ async def exception_handler(request: Request, exc: Exception):
     )
 
 
+async def refersh_access_token(page: Page):
+    global ACCESS_TOKEN
+    if settings.auto_refersh_access_token and not ACCESS_TOKEN:
+        await page.goto(settings.base_url)
+        try:
+            checkbox = page.locator(
+                '//input[@type="checkbox"]'
+            ).wait_for(
+                timeout=settings.checkbox_timeout
+            )
+            if checkbox.count():
+                checkbox.click()
+        except Exception:
+            pass
+        async with page.expect_response("https://chat.openai.com/api/auth/session") as session:
+            value = await session.value
+            value_json = await value.json()
+            ACCESS_TOKEN = value_json["accessToken"]
+
+
+@app.get("/admin/refersh_access_token")
+async def admin_refersh_access_token():
+    global ACCESS_TOKEN
+    async with async_playwright() as p:
+        browser = await p.chromium.connect_over_cdp(
+            settings.browser_server,
+            timeout=settings.timeout
+        )
+        context = browser.contexts[0]
+        page = context.pages[0]
+        await refersh_access_token(page)
+    return {"status": "ok"}
+
+
 async def _reverse_proxy(request: Request):
     global ACCESS_TOKEN
     async with async_playwright() as p:
@@ -48,23 +82,7 @@ async def _reverse_proxy(request: Request):
         )
         context = browser.contexts[0]
         page = context.pages[0]
-
-        if settings.auto_refersh_access_token and not ACCESS_TOKEN:
-            await page.goto(settings.base_url)
-            try:
-                checkbox = page.locator(
-                    '//input[@type="checkbox"]'
-                ).wait_for(
-                    timeout=settings.checkbox_timeout
-                )
-                if checkbox.count():
-                    checkbox.click()
-            except Exception:
-                pass
-            async with page.expect_response("https://chat.openai.com/api/auth/session") as session:
-                value = await session.value
-                value_json = await value.json()
-                ACCESS_TOKEN = value_json["accessToken"]
+        await refersh_access_token(page)
 
         access_token = (
             f"Bearer {ACCESS_TOKEN}"

@@ -12,6 +12,7 @@
 
 - [x] support all `backen-api`
 - [x] support login and auto get `ACCESS_TOKEN`
+- [x] support manually get `ACCESS_TOKEN`
 - [x] support use `ACCESS_TOKEN`
 - [x] support proxy
 - [x] base on browser
