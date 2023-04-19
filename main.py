@@ -9,6 +9,7 @@ from playwright.async_api import async_playwright, Page
 from config import settings
 
 ACCESS_TOKEN = None
+_logger = logging.getLogger(__name__)
 
 
 class EndpointFilter(logging.Filter):
@@ -44,15 +45,18 @@ async def refersh_access_token(page: Page):
     if settings.auto_refersh_access_token and not ACCESS_TOKEN:
         await page.goto(settings.base_url)
         try:
-            checkbox = page.locator(
-                '//input[@type="checkbox"]'
-            ).wait_for(
+            await page.locator('//iframe[contains(@src, "cloudflare")]').wait_for(timeout=settings.checkbox_timeout)
+            handle = await page.query_selector('//iframe[contains(@src, "cloudflare")]')
+            await handle.wait_for_element_state(
+                "visible", timeout=settings.checkbox_timeout
+            )
+            owner_frame = await handle.content_frame()
+            await owner_frame.click(
+                '//input[@type="checkbox"]',
                 timeout=settings.checkbox_timeout
             )
-            if checkbox.count():
-                checkbox.click()
-        except Exception:
-            pass
+        except Exception as e:
+            _logger.exception("Checkbox not found", e)
         async with page.expect_response("https://chat.openai.com/api/auth/session") as session:
             value = await session.value
             value_json = await value.json()
@@ -121,6 +125,9 @@ async def _reverse_proxy(request: Request):
             }
             ''' % (target_path, access_token, body, request.method.upper())
         )
+        if result["status"] in (401, 403):
+            ACCESS_TOKEN = None
+            return Response(status_code=result["status"])
         return Response(
             content=result["content"],
             status_code=result["status"],

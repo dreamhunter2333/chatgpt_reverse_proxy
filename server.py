@@ -33,6 +33,8 @@ def launch_context(playwright) -> "BrowserContext":
     context = launch_persistent_context(playwright)
     context.set_default_navigation_timeout(settings.navigation_timeout)
     context.set_default_timeout(settings.timeout)
+    page = context.pages[0]
+    page.goto(settings.base_url)
     return context
 
 
@@ -44,18 +46,7 @@ def heart_beat():
     try:
         _logger.info(f"server heart_beat: {settings.heart_beat}")
         page = context.pages[0]
-        page.goto(settings.base_url)
-        if settings.auto_refersh_access_token:
-            try:
-                checkbox = page.locator(
-                    '//input[@type="checkbox"]'
-                ).wait_for(
-                    timeout=settings.checkbox_timeout
-                )
-                if checkbox.count():
-                    checkbox.click()
-            except Exception:
-                pass
+        page.evaluate("() => {}")
     except Exception as e:
         _logger.exception(e)
         try:
@@ -69,7 +60,6 @@ def heart_beat():
 if __name__ == "__main__":
     playwright = sync_playwright().start()
     context = launch_context(playwright)
-    heart_beat()
     schedule.every(settings.heart_beat).seconds.do(heart_beat)
     while True:
         schedule.run_pending()
