@@ -17,8 +17,9 @@
 - [x] support proxy
 - [x] base on browser
 - [x] Auto Click cloudflare checkbox
+- [x] auto refersh access_token when 403
 - [ ] vnc password
-- [ ] auto refersh access_token when 403
+- [ ] auto login
 
 ## Overview
 
