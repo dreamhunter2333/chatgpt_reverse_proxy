@@ -74,6 +74,8 @@ services:
 
   chatgpt-reverse-proxy:
     image: ghcr.io/dreamhunter2333/chatgpt_reverse_proxy:latest
+    # if you use arm64
+    # image: ghcr.io/dreamhunter2333/chatgpt_reverse_proxy:arm64
     container_name: chatgpt-reverse-proxy
     restart: always
     ports:
