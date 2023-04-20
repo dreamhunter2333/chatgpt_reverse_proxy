@@ -82,8 +82,9 @@ services:
     ports:
       - "8000:8000"
       - "7900:7900"
-    volumes:
-      - ./tmp:/app/tmp
+    # if use auto_refersh_access_token please mount tmp
+    # volumes:
+    #   - ./tmp:/app/tmp
     environment:
       - VNC_NO_PASSWORD=1
       - user_data_dir=/app/tmp
