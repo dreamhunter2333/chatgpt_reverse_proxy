@@ -51,7 +51,7 @@ change `config.yaml`
 # from
 chatgpt_base_url: http://127.0.0.1:6060/api/
 # to
-chatgpt_base_url: http://chatgpt-reverse-proxy:8000/backen-api/
+chatgpt_base_url: http://chatgpt-reverse-proxy:8000/backend-api/
 ```
 
 ```yaml
