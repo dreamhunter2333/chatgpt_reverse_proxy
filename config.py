@@ -15,7 +15,7 @@ class Settings(BaseSettings):
     user_data_dir: str = "tmp/.playwright"
     browser_server: str = "http://localhost:9999"
     headless: bool = False
-    heart_beat: int = 3600
+    heart_beat: int = 600
     timeout: int = 10000
     navigation_timeout: int = 10000
     checkbox_timeout: int = 50000

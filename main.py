@@ -120,7 +120,7 @@ async def _reverse_proxy(request: Request):
             else f"{json.dumps(body.decode(), ensure_ascii=False)}"
         )
         target_path = f"{request.url.path}?{request.url.query}" if request.url.query else request.url.path
-        result = await page.evaluate('''
+        script = '''
             async () => {
                 response = await fetch("https://chat.openai.com%s", {
                     "headers": {
@@ -143,10 +143,12 @@ async def _reverse_proxy(request: Request):
                 }
             }
             ''' % (target_path, access_token, body, request.method.upper())
-        )
+        result = await page.evaluate(script)
         if result["status"] in (401, 403):
+            page.reload(wait_until="domcontentloaded")
+            result = await page.evaluate(script)
+        if settings.auto_refersh_access_token and result["status"] in (401, 403):
             ACCESS_TOKEN = None
-            return Response(status_code=result["status"])
         return Response(
             content=result["content"],
             status_code=result["status"],

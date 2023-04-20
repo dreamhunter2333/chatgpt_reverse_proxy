@@ -46,7 +46,7 @@ def heart_beat():
     try:
         _logger.info(f"server heart_beat: {settings.heart_beat}")
         page = context.pages[0]
-        page.evaluate("() => {}")
+        page.reload(wait_until="domcontentloaded")
     except Exception as e:
         _logger.exception(e)
         try:
