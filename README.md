@@ -18,6 +18,7 @@
 - [x] base on browser
 - [x] Auto Click cloudflare checkbox
 - [x] auto refersh access_token when 403
+- [x] support arm64,amd64
 - [ ] vnc password
 - [ ] auto login
 
@@ -100,6 +101,15 @@ python3 -m venv ./venv
 ./venv/bin/playwright install
 ./venv/bin/python server.py
 ./venv/bin/python main.py
+```
+
+build docker image
+
+```bash
+docker compose buid
+docker compose push
+docker buildx build --platform linux/amd64 . --file Dockerfile --tag ghcr.io/dreamhunter2333/chatgpt_reverse_proxy:latest --push
+docker buildx build --platform linux/arm64 . --file Dockerfile --tag ghcr.io/dreamhunter2333/chatgpt_reverse_proxy:arm64 --push
 ```
 
 ## reference
