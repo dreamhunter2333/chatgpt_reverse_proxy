@@ -62,8 +62,8 @@ def heart_beat():
                 '//input[@type="checkbox"]',
                 timeout=settings.checkbox_timeout
             )
-        except Exception as e:
-            _logger.exception("Checkbox not found", e)
+        except Exception:
+            _logger.info("Checkbox not found")
     except Exception as e:
         _logger.exception(e)
         try:
