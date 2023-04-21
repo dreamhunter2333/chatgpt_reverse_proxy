@@ -50,7 +50,6 @@ async def admin_refersh_access_token():
 
 
 async def _reverse_proxy(request: Request):
-    global ACCESS_TOKEN
     async with async_playwright() as p:
         browser = await p.chromium.connect_over_cdp(
             settings.browser_server,
@@ -61,8 +60,8 @@ async def _reverse_proxy(request: Request):
         await Tools.refersh_access_token(page)
 
         access_token = (
-            f"Bearer {ACCESS_TOKEN}"
-            if ACCESS_TOKEN else
+            f"Bearer {Tools.get_access_token()}"
+            if Tools.get_access_token() else
             request.headers.get("Authorization")
         )
 
@@ -104,7 +103,7 @@ async def _reverse_proxy(request: Request):
             await Tools.handle_checkbox(page)
             result = await page.evaluate(script)
         if settings.auto_refersh_access_token and result["status"] in (401, 403):
-            ACCESS_TOKEN = None
+            Tools.clear_access_token()
             await Tools.refersh_access_token(page)
             result = await page.evaluate(script)
         return Response(

@@ -18,6 +18,11 @@ class Tools:
         return ACCESS_TOKEN
 
     @staticmethod
+    def clear_access_token():
+        global ACCESS_TOKEN
+        ACCESS_TOKEN = None
+
+    @staticmethod
     async def refersh_access_token(page: Page):
         global ACCESS_TOKEN
         async with refersh_access_token_lock:
