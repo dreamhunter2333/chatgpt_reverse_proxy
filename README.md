@@ -92,6 +92,15 @@ services:
       # - navigation_timeout=100000
       # - proxy=http://127.0.0.1:7890
       # - auto_refersh_access_token=False
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl --fail http://localhost:8000/health_check || exit 1"
+        ]
+      interval: 30s
+      timeout: 1s
+      retries: 10
 ```
 
 ## RUN locally
