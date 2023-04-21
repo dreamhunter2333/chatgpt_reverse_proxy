@@ -76,6 +76,8 @@ def heart_beat():
 
 def shutdown(signal, frame):
     _logger.info('Shutting down...')
+    with open(settings.server_state, "w") as f:
+        f.write("stopping")
     global running
     running = False
     time.sleep(5)
@@ -84,6 +86,8 @@ def shutdown(signal, frame):
 
 
 if __name__ == "__main__":
+    with open(settings.server_state, "w") as f:
+        f.write("starting")
     # 注册信号处理程序
     signal.signal(signal.SIGTERM, shutdown)
     signal.signal(signal.SIGINT, shutdown)
@@ -91,6 +95,8 @@ if __name__ == "__main__":
     context = launch_context(playwright)
     running = True
     heart_beat()
+    with open(settings.server_state, "w") as f:
+        f.write("running")
     schedule.every(settings.heart_beat).seconds.do(heart_beat)
     while running:
         schedule.run_pending()

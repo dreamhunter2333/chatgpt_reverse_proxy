@@ -1,8 +1,9 @@
+import os
 import json
 import logging
 import uvicorn
 
-from fastapi import FastAPI, Request, status
+from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import PlainTextResponse, Response
 from playwright.async_api import async_playwright
@@ -40,6 +41,20 @@ async def exception_handler(request: Request, exc: Exception):
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         content=f"Internal Server Error: {exc}",
     )
+
+
+@app.get("/health_check")
+async def health_check():
+    res = False
+    if os.path.exists(settings.server_state):
+        with open(settings.server_state, "r") as f:
+            res = f.read() == "running"
+    if not res:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Server is not running",
+        )
+    return {"status": "ok"}
 
 
 @app.get("/admin/refersh_access_token")

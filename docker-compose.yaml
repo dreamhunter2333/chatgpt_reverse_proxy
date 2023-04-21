@@ -15,3 +15,12 @@ services:
       - VNC_NO_PASSWORD=1
       - user_data_dir=/app/tmp
       - auto_refersh_access_token=False
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl --fail http://localhost:8000/health_check || exit 1"
+        ]
+      interval: 30s
+      timeout: 1s
+      retries: 10
