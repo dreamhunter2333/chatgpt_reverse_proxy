@@ -33,10 +33,21 @@ class Tools:
                     return
             except Exception as e:
                 _logger.exception("Failed to refresh access token", e)
+            await Tools.handle_checkbox(page)
+            try:
+                async with page.expect_response("https://chat.openai.com/api/auth/session") as session:
+                    value = await session.value
+                    value_json = await value.json()
+                    ACCESS_TOKEN = value_json["accessToken"]
+                    _logger.info("Refreshed access token")
+                    return
+            except Exception as e:
+                _logger.exception("Failed to refresh access token", e)
 
     @staticmethod
     async def handle_checkbox(page: Page):
         async with handle_checkbox_lock:
+            await page.goto(settings.base_url)
             try:
                 await page.locator('//iframe[contains(@src, "cloudflare")]').wait_for(timeout=settings.checkbox_timeout)
                 handle = await page.query_selector('//iframe[contains(@src, "cloudflare")]')
