@@ -88,8 +88,8 @@ services:
     environment:
       - VNC_NO_PASSWORD=1
       - user_data_dir=/app/tmp
-      - timeout=100000
-      - navigation_timeout=100000
+      # - timeout=100000
+      # - navigation_timeout=100000
       # - proxy=http://127.0.0.1:7890
       # - auto_refersh_access_token=False
 ```
