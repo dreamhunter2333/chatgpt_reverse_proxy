@@ -74,19 +74,7 @@ def heart_beat():
         context = launch_context(playwright)
 
 
-def shutdown(signal, frame):
-    _logger.info('Shutting down...')
-    global running
-    running = False
-    time.sleep(5)
-    _logger.info('Shutdown complete')
-    sys.exit(0)
-
-
 if __name__ == "__main__":
-    # 注册信号处理程序
-    signal.signal(signal.SIGTERM, shutdown)
-    signal.signal(signal.SIGINT, shutdown)
     playwright = sync_playwright().start()
     context = launch_context(playwright)
     running = True
