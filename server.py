@@ -1,4 +1,6 @@
+import sys
 import time
+import signal
 import logging
 import schedule
 
@@ -47,6 +49,21 @@ def heart_beat():
         _logger.info(f"server heart_beat: {settings.heart_beat}")
         page = context.pages[0]
         page.reload(wait_until="domcontentloaded")
+        try:
+            page.locator(
+                '//iframe[contains(@src, "cloudflare")]').wait_for(timeout=settings.checkbox_timeout)
+            handle = page.query_selector(
+                '//iframe[contains(@src, "cloudflare")]')
+            handle.wait_for_element_state(
+                "visible", timeout=settings.checkbox_timeout
+            )
+            owner_frame = handle.content_frame()
+            owner_frame.click(
+                '//input[@type="checkbox"]',
+                timeout=settings.checkbox_timeout
+            )
+        except Exception as e:
+            _logger.exception("Checkbox not found", e)
     except Exception as e:
         _logger.exception(e)
         try:
@@ -57,10 +74,24 @@ def heart_beat():
         context = launch_context(playwright)
 
 
+def shutdown(signal, frame):
+    _logger.info('Shutting down...')
+    global running
+    running = False
+    time.sleep(5)
+    _logger.info('Shutdown complete')
+    sys.exit(0)
+
+
 if __name__ == "__main__":
+    # 注册信号处理程序
+    signal.signal(signal.SIGTERM, shutdown)
+    signal.signal(signal.SIGINT, shutdown)
     playwright = sync_playwright().start()
     context = launch_context(playwright)
+    running = True
+    heart_beat()
     schedule.every(settings.heart_beat).seconds.do(heart_beat)
-    while True:
+    while running:
         schedule.run_pending()
         time.sleep(1)
