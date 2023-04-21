@@ -67,7 +67,8 @@ services:
       - 8080:80
       # - 6060:6060
     depends_on:
-      - chatgpt-reverse-proxy
+      chatgpt-reverse-proxy:
+        condition: service_healthy
     volumes:
       - ./data:/data
       - ./config.yaml:/app/backend/api/config/config.yaml

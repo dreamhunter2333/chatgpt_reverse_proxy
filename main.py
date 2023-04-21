@@ -49,7 +49,9 @@ async def health_check():
     if os.path.exists(settings.server_state):
         with open(settings.server_state, "r") as f:
             res = f.read() == "running"
-    if not res:
+    if settings.auto_refersh_access_token and not Tools.get_access_token():
+        await admin_refersh_access_token()
+    if not res or (settings.auto_refersh_access_token and not Tools.get_access_token()):
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail="Server is not running",
@@ -59,9 +61,16 @@ async def health_check():
 
 @app.get("/admin/refersh_access_token")
 async def admin_refersh_access_token():
-    Tools.refersh_access_token()
-    _logger.info("Refreshed access token")
-    return {"status": "ok"}
+    async with async_playwright() as p:
+        browser = await p.chromium.connect_over_cdp(
+            settings.browser_server,
+            timeout=settings.timeout
+        )
+        context = browser.contexts[0]
+        page = context.pages[0]
+        await Tools.refersh_access_token(page)
+        _logger.info("Refreshed access token")
+        return {"status": "ok"}
 
 
 async def _reverse_proxy(request: Request):
