@@ -100,7 +100,7 @@ services:
           "curl --fail http://localhost:8000/health_check || exit 1"
         ]
       interval: 30s
-      timeout: 1s
+      timeout: 10s
       retries: 10
 ```
 
