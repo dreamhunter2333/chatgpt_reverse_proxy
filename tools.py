@@ -51,18 +51,17 @@ class Tools:
 
     @staticmethod
     async def handle_checkbox(page: Page):
-        async with handle_checkbox_lock:
-            await page.goto(settings.base_url)
-            try:
-                await page.locator('//iframe[contains(@src, "cloudflare")]').wait_for(timeout=settings.checkbox_timeout)
-                handle = await page.query_selector('//iframe[contains(@src, "cloudflare")]')
-                await handle.wait_for_element_state(
-                    "visible", timeout=settings.checkbox_timeout
-                )
-                owner_frame = await handle.content_frame()
-                await owner_frame.click(
-                    '//input[@type="checkbox"]',
-                    timeout=settings.checkbox_timeout
-                )
-            except Exception as e:
-                _logger.exception("Checkbox not found", e)
+        await page.goto(settings.base_url)
+        try:
+            await page.locator('//iframe[contains(@src, "cloudflare")]').wait_for(timeout=settings.checkbox_timeout)
+            handle = await page.query_selector('//iframe[contains(@src, "cloudflare")]')
+            await handle.wait_for_element_state(
+                "visible", timeout=settings.checkbox_timeout
+            )
+            owner_frame = await handle.content_frame()
+            await owner_frame.click(
+                '//input[@type="checkbox"]',
+                timeout=settings.checkbox_timeout
+            )
+        except Exception as e:
+            _logger.exception("Checkbox not found", e)
