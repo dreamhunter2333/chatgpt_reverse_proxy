@@ -10,6 +10,7 @@
 
 ## Features and TODO
 
+- [x] support wgcf to unblock access denied
 - [x] support all `backen-api`
 - [x] support login and auto get `ACCESS_TOKEN`
 - [x] support manually get `ACCESS_TOKEN`
@@ -19,7 +20,6 @@
 - [x] Auto Click cloudflare checkbox
 - [x] auto refersh access_token when 403
 - [x] support arm64,amd64
-- [x] support wgcf
 - [ ] vnc password
 - [ ] auto login
 
