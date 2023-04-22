@@ -19,6 +19,7 @@
 - [x] Auto Click cloudflare checkbox
 - [x] auto refersh access_token when 403
 - [x] support arm64,amd64
+- [x] support wgcf
 - [ ] vnc password
 - [ ] auto login
 
@@ -86,6 +87,8 @@ services:
     # if use auto_refersh_access_token please mount tmp
     # volumes:
     #   - ./tmp:/app/tmp
+    # if you ip is access denied, you can uncomment this to use wgcf
+    # network_mode: "service:wgcf"
     environment:
       - VNC_NO_PASSWORD=1
       - user_data_dir=/app/tmp
@@ -102,6 +105,19 @@ services:
       interval: 30s
       timeout: 10s
       retries: 10
+
+  # if you ip is access denied, you can uncomment this to use wgcf
+  # wgcf:
+  #   image: neilpang/wgcf-docker:latest
+  #   volumes:
+  #     - ./wgcf:/wgcf
+  #     - /lib/modules:/lib/modules
+  #   privileged: true
+  #   sysctls:
+  #     net.ipv6.conf.all.disable_ipv6: 0
+  #   cap_add:
+  #     - NET_ADMIN
+  #   command: "-4"
 ```
 
 ## RUN locally
