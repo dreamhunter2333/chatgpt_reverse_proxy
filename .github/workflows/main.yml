@@ -14,7 +14,8 @@ jobs:
     steps:
       - uses: bots-house/ghcr-delete-image-action@v1.1.0
         with:
-          owner: bots-house
-          name: some-web-service
+          owner: dreamhunter2333
+          name: chatgpt_reverse_proxy
           token: ${{ secrets.GITHUB_TOKEN }}
-          untagged: all
+          untagged-keep-latest: 0
+
