@@ -144,3 +144,4 @@ docker buildx build --platform linux/arm64 . --file Dockerfile --tag ghcr.io/dre
 - [moeakwak/chatgpt-web-share](https://github.com/moeakwak/chatgpt-web-share/wiki/%E4%B8%AD%E6%96%87%E6%8C%87%E5%8D%97)
 - [SeleniumHQ/docker-selenium](https://github.com/SeleniumHQ/docker-selenium)
 - [microsoft/playwright-python](https://github.com/microsoft/playwright-python)
+- [Neilpang/wgcf-docker](https://github.com/Neilpang/wgcf-docker)
