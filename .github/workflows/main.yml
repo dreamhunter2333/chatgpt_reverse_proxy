@@ -1,21 +1,20 @@
-name: Docker Image CI
+name: Clean up docker images
 
 on:
   schedule:
-    # Runs at 0:00 CST
     - cron: '00 16 * * *'
   workflow_dispatch:
 
 jobs:
-  build-and-push-image:
+  clean-up-image:
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
-  steps:
-    - uses: bots-house/ghcr-delete-image-action@v1.1.0
-    with:
-      owner: bots-house
-      name: some-web-service
-      token: ${{ secrets.GITHUB_TOKEN }}
-      untagged: all
+    steps:
+      - uses: bots-house/ghcr-delete-image-action@v1.1.0
+        with:
+          owner: bots-house
+          name: some-web-service
+          token: ${{ secrets.GITHUB_TOKEN }}
+          untagged: all
