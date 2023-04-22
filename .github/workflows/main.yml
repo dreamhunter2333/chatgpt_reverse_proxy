@@ -12,7 +12,8 @@ jobs:
       contents: read
       packages: write
     steps:
-      - uses: bots-house/ghcr-delete-image-action@v1.1.0
+      - name: GHCR Delete Image for User
+        uses: dreamhunter2333/ghcr-delete-image-action@v1
         with:
           owner: dreamhunter2333
           name: chatgpt_reverse_proxy
