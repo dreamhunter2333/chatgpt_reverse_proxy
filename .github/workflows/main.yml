@@ -13,7 +13,7 @@ jobs:
       packages: write
     steps:
       - name: GHCR Delete Image for User
-        uses: dreamhunter2333/ghcr-delete-image-action@v2
+        uses: dreamhunter2333/ghcr-delete-image-action@v3
         with:
           owner: dreamhunter2333
           name: chatgpt_reverse_proxy
