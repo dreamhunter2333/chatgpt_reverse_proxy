@@ -121,7 +121,7 @@ async def _reverse_proxy(request: Request):
             ''' % (target_path, access_token, body, request.method.upper())
         result = await page.evaluate(script)
         if result["status"] in (401, 403):
-            page.reload(wait_until="domcontentloaded")
+            await page.reload(wait_until="domcontentloaded")
             result = await page.evaluate(script)
         if result["status"] in (401, 403):
             await Tools.handle_checkbox(page)
