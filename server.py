@@ -48,22 +48,7 @@ def heart_beat():
     try:
         _logger.info(f"server heart_beat: {settings.heart_beat}")
         page = context.pages[0]
-        page.reload(wait_until="domcontentloaded")
-        try:
-            page.locator(
-                '//iframe[contains(@src, "cloudflare")]').wait_for(timeout=settings.checkbox_timeout)
-            handle = page.query_selector(
-                '//iframe[contains(@src, "cloudflare")]')
-            handle.wait_for_element_state(
-                "visible", timeout=settings.checkbox_timeout
-            )
-            owner_frame = handle.content_frame()
-            owner_frame.click(
-                '//input[@type="checkbox"]',
-                timeout=settings.checkbox_timeout
-            )
-        except Exception:
-            _logger.info("Checkbox not found")
+        page.reload(wait_until="commit")
     except Exception as e:
         _logger.exception(e)
         try:
@@ -72,6 +57,24 @@ def heart_beat():
             _logger.exception(e)
         _logger.info("Relaunching context")
         context = launch_context(playwright)
+
+
+def checkbox():
+    global playwright
+    if not settings.heart_beat:
+        return
+    global context
+    try:
+        page = context.pages[0]
+        handle = page.query_selector(
+            '//iframe[contains(@src, "cloudflare")]')
+        owner_frame = handle.content_frame()
+        owner_frame.click(
+            '//input[@type="checkbox"]',
+            timeout=1000
+        )
+    except Exception:
+        _logger.debug("Checkbox not found")
 
 
 def shutdown(signal, frame):
@@ -88,7 +91,6 @@ def shutdown(signal, frame):
 if __name__ == "__main__":
     with open(settings.server_state, "w") as f:
         f.write("starting")
-    # 注册信号处理程序
     signal.signal(signal.SIGTERM, shutdown)
     signal.signal(signal.SIGINT, shutdown)
     playwright = sync_playwright().start()
@@ -98,6 +100,7 @@ if __name__ == "__main__":
     with open(settings.server_state, "w") as f:
         f.write("running")
     schedule.every(settings.heart_beat).seconds.do(heart_beat)
+    schedule.every(1).seconds.do(checkbox)
     while running:
         schedule.run_pending()
         time.sleep(1)
