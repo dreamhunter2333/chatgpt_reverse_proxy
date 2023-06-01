@@ -5,6 +5,7 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: chatgpt_reverse_proxy
+    hostname: chatgpt-reverse-proxy
     restart: always
     ports:
       - "8000:8000"
