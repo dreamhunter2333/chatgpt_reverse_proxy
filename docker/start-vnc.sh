@@ -22,6 +22,15 @@ if [ "${START_XVFB:-$SE_START_XVFB}" = true ] ; then
         X11VNC_OPTS=-usepw
     fi
 
+    VNC_PASSWORD=${VNC_PASSWORD:-$SE_VNC_PASSWORD}
+    if [ ! -z $VNC_PASSWORD ]; then
+      echo "Starting VNC server with custom password"
+      if [ ! -d "${HOME}/.vnc" ]; then
+          mkdir -p "${HOME}/.vnc"
+      fi
+      x11vnc -storepasswd ${VNC_PASSWORD} ${HOME}/.vnc/passwd
+    fi
+
     VNC_VIEW_ONLY=${VNC_VIEW_ONLY:-$SE_VNC_VIEW_ONLY}
     if [ ! -z $VNC_VIEW_ONLY ]; then
         echo "Starting VNC server with viewonly option"

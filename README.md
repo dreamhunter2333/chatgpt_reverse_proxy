@@ -20,7 +20,7 @@
 - [x] Auto Click cloudflare checkbox
 - [x] auto refersh access_token when 403
 - [x] support arm64,amd64
-- [ ] vnc password
+- [x] vnc password
 - [ ] auto login
 
 ## Overview
@@ -92,6 +92,8 @@ services:
     # network_mode: "service:wgcf"
     environment:
       - VNC_NO_PASSWORD=1
+      # do not set VNC_NO_PASSWORD and you can set VNC_PASSWORD
+      # - VNC_PASSWORD=password
       - user_data_dir=/app/tmp
       # - timeout=100000
       # - navigation_timeout=100000
